@@ -22,6 +22,7 @@ mod unique_operation_names;
 mod unique_variable_names;
 mod variables_are_input_types;
 mod variables_in_allowed_position;
+mod single_query_only;
 
 use crate::{
     ast::Document,
@@ -65,6 +66,7 @@ where
         .with(self::unique_operation_names::factory())
         .with(self::unique_variable_names::factory())
         .with(self::variables_are_input_types::factory())
+        .with(self::single_query_only::factory())
         .with(self::variables_in_allowed_position::factory());
     visit(&mut stage1, ctx, doc);
     if ctx.has_errors() {
