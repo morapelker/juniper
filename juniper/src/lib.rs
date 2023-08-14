@@ -281,7 +281,6 @@ where
         let mut ctx = ValidatorContext::new(&root_node.schema, &document);
         visit_all_rules(&mut ctx, &document);
         
-        dbg!(&document);        
         let errors = ctx.into_errors();
         if !errors.is_empty() {
             return Err(GraphQLError::ValidationError(errors));
