@@ -298,6 +298,7 @@ where
         SubscriptionT::TypeInfo: Sync,
         S: Send + Sync,
     {
+        println!("hello test 123");
         match self {
             Self::Single(req) => {
                 let resp = req.execute(root_node, context).await;
