@@ -26,8 +26,8 @@ use crate::{
 /// "operationName", and "variables" manually.
 #[derive(Deserialize, Clone, Serialize, PartialEq, Debug)]
 pub struct GraphQLRequest<S = DefaultScalarValue>
-where
-    S: ScalarValue,
+    where
+        S: ScalarValue,
 {
     query: String,
     #[serde(rename = "operationName")]
@@ -37,8 +37,8 @@ where
 }
 
 impl<S> GraphQLRequest<S>
-where
-    S: ScalarValue,
+    where
+        S: ScalarValue,
 {
     /// Returns the `operation_name` associated with this request.
     pub fn operation_name(&self) -> Option<&str> {
@@ -80,11 +80,11 @@ where
         root_node: &'a RootNode<QueryT, MutationT, SubscriptionT, S>,
         context: &QueryT::Context,
     ) -> GraphQLResponse<'a, S>
-    where
-        S: ScalarValue,
-        QueryT: GraphQLType<S>,
-        MutationT: GraphQLType<S, Context = QueryT::Context>,
-        SubscriptionT: GraphQLType<S, Context = QueryT::Context>,
+        where
+            S: ScalarValue,
+            QueryT: GraphQLType<S>,
+            MutationT: GraphQLType<S, Context=QueryT::Context>,
+            SubscriptionT: GraphQLType<S, Context=QueryT::Context>,
     {
         GraphQLResponse(crate::execute_sync(
             &self.query,
@@ -104,15 +104,15 @@ where
         root_node: &'a RootNode<'a, QueryT, MutationT, SubscriptionT, S>,
         context: &'a QueryT::Context,
     ) -> GraphQLResponse<'a, S>
-    where
-        QueryT: GraphQLTypeAsync<S>,
-        QueryT::TypeInfo: Sync,
-        QueryT::Context: Sync,
-        MutationT: GraphQLTypeAsync<S, Context = QueryT::Context>,
-        MutationT::TypeInfo: Sync,
-        SubscriptionT: GraphQLType<S, Context = QueryT::Context> + Sync,
-        SubscriptionT::TypeInfo: Sync,
-        S: ScalarValue + Send + Sync,
+        where
+            QueryT: GraphQLTypeAsync<S>,
+            QueryT::TypeInfo: Sync,
+            QueryT::Context: Sync,
+            MutationT: GraphQLTypeAsync<S, Context=QueryT::Context>,
+            MutationT::TypeInfo: Sync,
+            SubscriptionT: GraphQLType<S, Context=QueryT::Context> + Sync,
+            SubscriptionT::TypeInfo: Sync,
+            S: ScalarValue + Send + Sync,
     {
         let op = self.operation_name();
         let vars = &self.variables();
@@ -130,18 +130,18 @@ pub async fn resolve_into_stream<'req, 'rn, 'ctx, 'a, QueryT, MutationT, Subscri
     root_node: &'rn RootNode<'a, QueryT, MutationT, SubscriptionT, S>,
     context: &'ctx QueryT::Context,
 ) -> Result<(Value<ValuesStream<'a, S>>, Vec<ExecutionError<S>>), GraphQLError<'a>>
-where
-    'req: 'a,
-    'rn: 'a,
-    'ctx: 'a,
-    QueryT: GraphQLTypeAsync<S>,
-    QueryT::TypeInfo: Sync,
-    QueryT::Context: Sync,
-    MutationT: GraphQLTypeAsync<S, Context = QueryT::Context>,
-    MutationT::TypeInfo: Sync,
-    SubscriptionT: GraphQLSubscriptionType<S, Context = QueryT::Context>,
-    SubscriptionT::TypeInfo: Sync,
-    S: ScalarValue + Send + Sync,
+    where
+        'req: 'a,
+        'rn: 'a,
+        'ctx: 'a,
+        QueryT: GraphQLTypeAsync<S>,
+        QueryT::TypeInfo: Sync,
+        QueryT::Context: Sync,
+        MutationT: GraphQLTypeAsync<S, Context=QueryT::Context>,
+        MutationT::TypeInfo: Sync,
+        SubscriptionT: GraphQLSubscriptionType<S, Context=QueryT::Context>,
+        SubscriptionT::TypeInfo: Sync,
+        S: ScalarValue + Send + Sync,
 {
     let op = req.operation_name();
     let vars = req.variables();
@@ -160,8 +160,8 @@ pub struct GraphQLResponse<'a, S = DefaultScalarValue>(
 );
 
 impl<'a, S> GraphQLResponse<'a, S>
-where
-    S: ScalarValue,
+    where
+        S: ScalarValue,
 {
     /// Constructs new `GraphQLResponse` using the given result
     pub fn from_result(r: Result<(Value<S>, Vec<ExecutionError<S>>), GraphQLError<'a>>) -> Self {
@@ -183,15 +183,15 @@ where
 }
 
 impl<'a, T> Serialize for GraphQLResponse<'a, T>
-where
-    T: Serialize + ScalarValue,
-    Value<T>: Serialize,
-    ExecutionError<T>: Serialize,
-    GraphQLError<'a>: Serialize,
+    where
+        T: Serialize + ScalarValue,
+        Value<T>: Serialize,
+        ExecutionError<T>: Serialize,
+        GraphQLError<'a>: Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: ser::Serializer,
+        where
+            S: ser::Serializer,
     {
         match self.0 {
             Ok((ref res, ref err)) => {
@@ -222,8 +222,8 @@ where
 #[serde(untagged)]
 #[serde(bound = "InputValue<S>: Deserialize<'de>")]
 pub enum GraphQLBatchRequest<S = DefaultScalarValue>
-where
-    S: ScalarValue,
+    where
+        S: ScalarValue,
 {
     /// A single operation request.
     Single(GraphQLRequest<S>),
@@ -236,9 +236,9 @@ where
 }
 
 fn deserialize_non_empty_vec<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
-where
-    D: de::Deserializer<'de>,
-    T: Deserialize<'de>,
+    where
+        D: de::Deserializer<'de>,
+        T: Deserialize<'de>,
 {
     use de::Error as _;
 
@@ -251,8 +251,8 @@ where
 }
 
 impl<S> GraphQLBatchRequest<S>
-where
-    S: ScalarValue,
+    where
+        S: ScalarValue,
 {
     /// Execute a GraphQL batch request synchronously using the specified schema and context
     ///
@@ -262,10 +262,10 @@ where
         root_node: &'a RootNode<QueryT, MutationT, SubscriptionT, S>,
         context: &QueryT::Context,
     ) -> GraphQLBatchResponse<'a, S>
-    where
-        QueryT: GraphQLType<S>,
-        MutationT: GraphQLType<S, Context = QueryT::Context>,
-        SubscriptionT: GraphQLType<S, Context = QueryT::Context>,
+        where
+            QueryT: GraphQLType<S>,
+            MutationT: GraphQLType<S, Context=QueryT::Context>,
+            SubscriptionT: GraphQLType<S, Context=QueryT::Context>,
     {
         match *self {
             Self::Single(ref req) => {
@@ -288,17 +288,16 @@ where
         root_node: &'a RootNode<'a, QueryT, MutationT, SubscriptionT, S>,
         context: &'a QueryT::Context,
     ) -> GraphQLBatchResponse<'a, S>
-    where
-        QueryT: GraphQLTypeAsync<S>,
-        QueryT::TypeInfo: Sync,
-        QueryT::Context: Sync,
-        MutationT: GraphQLTypeAsync<S, Context = QueryT::Context>,
-        MutationT::TypeInfo: Sync,
-        SubscriptionT: GraphQLSubscriptionType<S, Context = QueryT::Context>,
-        SubscriptionT::TypeInfo: Sync,
-        S: Send + Sync,
+        where
+            QueryT: GraphQLTypeAsync<S>,
+            QueryT::TypeInfo: Sync,
+            QueryT::Context: Sync,
+            MutationT: GraphQLTypeAsync<S, Context=QueryT::Context>,
+            MutationT::TypeInfo: Sync,
+            SubscriptionT: GraphQLSubscriptionType<S, Context=QueryT::Context>,
+            SubscriptionT::TypeInfo: Sync,
+            S: Send + Sync,
     {
-        println!("hello test 123");
         match self {
             Self::Single(req) => {
                 let resp = req.execute(root_node, context).await;
@@ -308,7 +307,7 @@ where
                 let resps = futures::future::join_all(
                     reqs.iter().map(|req| req.execute(root_node, context)),
                 )
-                .await;
+                    .await;
                 GraphQLBatchResponse::Batch(resps)
             }
         }
@@ -331,8 +330,8 @@ where
 #[derive(Serialize)]
 #[serde(untagged)]
 pub enum GraphQLBatchResponse<'a, S = DefaultScalarValue>
-where
-    S: ScalarValue,
+    where
+        S: ScalarValue,
 {
     /// Result of a single operation in a GraphQL request.
     Single(GraphQLResponse<'a, S>),
@@ -341,8 +340,8 @@ where
 }
 
 impl<'a, S> GraphQLBatchResponse<'a, S>
-where
-    S: ScalarValue,
+    where
+        S: ScalarValue,
 {
     /// Returns if all the GraphQLResponse in this operation are ok,
     /// you can use it to determine wheter to send a 200 or 400 HTTP status code.
@@ -429,7 +428,7 @@ pub mod tests {
                 .as_ref()
                 .expect("No data returned from request"),
         )
-        .expect("Could not parse JSON object")
+            .expect("Could not parse JSON object")
     }
 
     fn test_simple_get<T: HttpIntegration>(integration: &T) {
@@ -472,7 +471,7 @@ pub mod tests {
                         }
                     }"#
             )
-            .expect("Invalid JSON constant in test")
+                .expect("Invalid JSON constant in test")
         );
     }
 
@@ -503,7 +502,7 @@ pub mod tests {
                         }
                     }"#
             )
-            .expect("Invalid JSON constant in test")
+                .expect("Invalid JSON constant in test")
         );
     }
 
@@ -534,7 +533,7 @@ pub mod tests {
             serde_json::from_str::<Json>(
                 r#"[{"data": {"hero": {"name": "R2-D2"}}}, {"data": {"hero": {"name": "R2-D2"}}}]"#,
             )
-            .expect("Invalid JSON constant in test"),
+                .expect("Invalid JSON constant in test"),
         );
     }
 
@@ -629,20 +628,20 @@ pub mod tests {
                     "type":"connection_init",
                     "payload":{}
                 }"#
-                .to_owned(),
+                    .to_owned(),
             ),
             WsIntegrationMessage::Expect(
                 r#"{
                     "type":"connection_ack"
                 }"#
-                .to_owned(),
+                    .to_owned(),
                 WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
             ),
             WsIntegrationMessage::Expect(
                 r#"{
                     "type":"ka"
                 }"#
-                .to_owned(),
+                    .to_owned(),
                 WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
             ),
             WsIntegrationMessage::Send(
@@ -656,7 +655,7 @@ pub mod tests {
                         "query":"subscription { asyncHuman { id, name, homePlanet } }"
                     }
                 }"#
-                .to_owned(),
+                    .to_owned(),
             ),
             WsIntegrationMessage::Expect(
                 r#"{
@@ -672,7 +671,7 @@ pub mod tests {
                         }
                     }
                 }"#
-                .to_owned(),
+                    .to_owned(),
                 WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
             ),
         ];
@@ -690,7 +689,7 @@ pub mod tests {
                         "message":"serde error: expected value at line 1 column 1"
                     }
                 }"#
-                .to_owned(),
+                    .to_owned(),
                 WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
             ),
         ];
@@ -705,21 +704,21 @@ pub mod tests {
                     "type":"connection_init",
                     "payload":{}
                 }"#
-                .to_owned(),
+                    .to_owned(),
             ),
             WsIntegrationMessage::Expect(
                 r#"{
                     "type":"connection_ack"
                 }"#
-                .to_owned(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT
+                    .to_owned(),
+                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
             ),
             WsIntegrationMessage::Expect(
                 r#"{
                     "type":"ka"
                 }"#
-                .to_owned(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT
+                    .to_owned(),
+                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
             ),
             WsIntegrationMessage::Send(
                 r#"{
@@ -732,7 +731,7 @@ pub mod tests {
                         "query":"subscription { asyncHuman }"
                     }
                 }"#
-                .to_owned(),
+                    .to_owned(),
             ),
             WsIntegrationMessage::Expect(
                 r#"{
@@ -746,9 +745,9 @@ pub mod tests {
                         }]
                     }]
                 }"#
-                .to_owned(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT
-            )
+                    .to_owned(),
+                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+            ),
         ];
 
         integration.run(messages).await.unwrap();
